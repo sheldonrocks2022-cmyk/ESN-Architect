@@ -23,7 +23,7 @@ def make_project(name: str, language: str, features: list[str]) -> bytes:
         }
     else:
         files = {
-            "index.js": '''const {{ Client, GatewayIntentBits, REST, Routes }} = require("discord.js");\nrequire("dotenv").config();\n\nconst client = new Client({ intents: [GatewayIntentBits.Guilds] });\nclient.once("ready", () => console.log(`Logged in as ${client.user.tag}`));\nclient.login(process.env.DISCORD_TOKEN);\n''',
+            "index.js": '''const { Client, GatewayIntentBits } = require("discord.js");\nrequire("dotenv").config();\n\nconst client = new Client({ intents: [GatewayIntentBits.Guilds] });\nclient.once("ready", () => console.log(`Logged in as ${client.user.tag}`));\nclient.login(process.env.DISCORD_TOKEN);\n''',
             "package.json": '''{\n  "name": "discord-bot",\n  "version": "1.0.0",\n  "private": true,\n  "scripts": {"start": "node index.js"},\n  "dependencies": {"discord.js": "^14.0.0", "dotenv": "^16.0.0"}\n}\n''',
             ".env.example": "DISCORD_TOKEN=\n",
             ".gitignore": ".env\nnode_modules/\n",
