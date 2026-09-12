@@ -22,7 +22,10 @@ class ESNForge(commands.Bot):
         self.db = Database("data/forge.db")
 
     async def setup_hook(self):
-        extensions = ("cogs.forge", "cogs.code", "cogs.embeds", "cogs.server", "cogs.botbuilder", "cogs.config", "cogs.help")
+        extensions = (
+            "cogs.forge", "cogs.code", "cogs.embeds", "cogs.server",
+            "cogs.botbuilder", "cogs.config", "cogs.help", "cogs.tools"
+        )
         for extension in extensions:
             await self.load_extension(extension)
         synced = await self.tree.sync()
