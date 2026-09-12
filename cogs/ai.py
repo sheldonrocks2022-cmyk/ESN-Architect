@@ -42,12 +42,19 @@ def clean_secret(text: str) -> str:
 
 
 def safe_path(path: str) -> str | None:
-    path = str(path).replace("\\", "/").strip().lstrip("/")
-    if not path or ".." in path.split("/"):
+    """Normalize a generated archive path without permitting absolute/traversal paths."""
+    raw = str(path).replace("\\", "/").strip()
+    if not raw or raw.startswith("/") or re.match(r"^[A-Za-z]:/", raw):
         return None
-    if path.startswith(".") and path not in {".gitignore", ".env.example"}:
+    parts = raw.split("/")
+    if any(part in {"", ".", ".."} for part in parts):
         return None
-    return path[:240]
+    normalized = "/".join(parts)
+    if normalized.startswith(".") and normalized not in {".gitignore", ".env.example"}:
+        return None
+    if normalized.lower() in {".env", ".env.local", ".env.production"}:
+        return None
+    return normalized[:240]
 
 
 class ForgeAI(commands.Cog):
@@ -215,8 +222,6 @@ Do not include real credentials. Do not use TODO placeholders for required funct
                     path = safe_path(path)
                     if not path or not isinstance(content, str):
                         continue
-                    if path.lower() in {".env", ".env.local", ".env.production"}:
-                        continue
                     z.writestr(path, clean_secret(content))
                     written += 1
                 z.writestr("FORGE-INSTRUCTIONS.txt", clean_secret(str(data.get("run_instructions", "Review README and test before production."))))
@@ -236,8 +241,8 @@ Do not include real credentials. Do not use TODO placeholders for required funct
     async def ai_status(self, interaction: discord.Interaction):
         configured = self.client is not None
         cfg = self.bot.db.get_config(interaction.guild_id) if interaction.guild_id else {}
-        usage = self.bot.db.get_usage(interaction.guild_id, interaction.user.id) if interaction.guild_id else []
-        total = sum(row[1] for row in usage)
+        usage = self.bot.db.get_usage(interaction.guild_id, interaction.user.id) if interaction.guild_id else {}
+        total = sum(count for _, count in usage)
         text = (f"**API:** {'🟢 Configured' if configured else '🔴 Not configured'}\n"
                 f"**Model:** `{self.model_for(interaction.guild_id)}`\n"
                 f"**Server AI:** {'🟢 Enabled' if cfg.get('ai_enabled', True) else '🔴 Disabled'}\n"
