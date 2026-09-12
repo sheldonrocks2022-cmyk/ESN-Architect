@@ -9,6 +9,11 @@ from discord.ext import commands
 from utils.validation import clean_csv, safe_slug
 
 
+def safe_name(value: str) -> str:
+    """Return the legacy project slug expected by the bot-builder API/tests."""
+    return safe_slug(value, "discord-bot")
+
+
 def py_project(name: str, features: list[str]) -> dict[str, str]:
     commands_code = []
     for feature in features:
@@ -73,7 +78,7 @@ def js_project(name: str, features: list[str]) -> dict[str, str]:
 
 
 def make_project(name: str, language: str, features: list[str]) -> bytes:
-    slug = safe_slug(name)
+    slug = safe_name(name)
     files = py_project(name, features) if language == "python" else js_project(name, features)
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -114,7 +119,7 @@ class BotBuilder(commands.Cog):
     ):
         feature_list = clean_csv(features, 15)
         data = make_project(name[:80], language.value, feature_list)
-        file = discord.File(io.BytesIO(data), filename=f"{safe_slug(name)}-esn-forge.zip")
+        file = discord.File(io.BytesIO(data), filename=f"{safe_name(name)}-esn-forge.zip")
         embed = discord.Embed(
             title="🤖 Bot Forge",
             description=f"Generated **{name[:80]}** with {len(feature_list)} requested features.",
