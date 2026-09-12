@@ -2,66 +2,71 @@
 
 **Build. Create. Deploy.**
 
-ESN Forge is an ESN developer toolkit for Discord communities, creators, and developers. It combines coding helpers, AI-assisted generation, bot project exports, embed tools, server architecture, security checks, utilities, and owner diagnostics.
+ESN Forge is an ESN developer toolkit for Discord communities, creators, and developers. It combines coding helpers, AI-assisted generation, downloadable bot projects, embed building/export, server architecture and deployment, security checks, utilities, configuration, diagnostics, and production operations.
 
 ## AI Forge
 
-Forge can use the OpenAI Responses API for real AI-assisted development when `OPENAI_API_KEY` is configured. Current AI commands:
+When `OPENAI_API_KEY` is configured, Forge provides real AI-assisted development through the OpenAI Responses API:
 
 - `/ask` — general developer/project assistant
-- `/ai-generate` — generate a real implementation
-- `/ai-debug` — diagnose an error and produce a fix
-- `/ai-explain` — explain code/concepts at a chosen level
+- `/ai-generate` — generate an implementation
+- `/ai-debug` — diagnose an error
+- `/ai-fix` — produce a fix
+- `/ai-explain` — explain code/concepts
 - `/ai-improve` — refactor code
-- `/ai-review` — security/quality/code review
-- `/ai-convert` — convert between languages/frameworks
+- `/ai-review` — security/quality review
+- `/ai-test` — generate tests
+- `/ai-convert` — convert languages/frameworks
 - `/ai-docs` — generate documentation
-- `/ai-project` — generate a multi-file project and download a ZIP
-- `/ai-status` — check AI configuration
+- `/ai-file` — analyze a text/code attachment
+- `/ai-project` — generate a multi-file project ZIP
+- `/ai-project-plan` — plan a project
+- `/ai-status` — inspect AI configuration
 
-API keys are never hardcoded in source code. Configure `OPENAI_API_KEY` through the runtime environment. `OPENAI_MODEL` selects the configured model.
+Secrets are never hardcoded. Use `OPENAI_API_KEY` and optionally `OPENAI_MODEL` in the private runtime environment.
 
-## Command toolkit
-
-### Forge & coding
-- `/forge` — main Forge dashboard
-- `/project` — project blueprint
-- `/code` — coding workflow
-- `/generate` — local starter implementation generator
-- `/debug` — local error diagnosis
-- `/explain` — local explanation helper
-- `/improve` — local refactoring checklist
-- `/review` — local quality/security review
-- `/convert` — conversion workflow
-- `/docs` — documentation template
+## Forge Builders
 
 ### Bot Forge
-- `/bot` — bot starter specification
-- `/bot-create` — downloadable starter bot ZIP
+- `/bot` — generate a real downloadable Python or JavaScript Discord bot starter
+- `/bot-create` — additional starter export
 - `/bot-command` — command template
 - `/bot-event` — event template
 - `/bot-feature` — feature implementation plan
 - `/bot-structure` — project structure
 - `/bot-config` — secure configuration guidance
-- `/bot-export` — starter project export
+- `/bot-export` — project export
 
 ### Embed Forge
-- `/embed` — create an embed
-- `/embed-json` — embed configuration JSON
+- `/embed` — build and preview an embed with JSON export
+- `/embed-json` — preview an embed from JSON
 - `/embed-code` — Python embed code
-- `/embed-template` — reusable template
+- `/embed-template` — reusable templates
 
 ### Server Forge
-- `/server` — server architecture plan
-- `/server-plan` — detailed plan
+- `/server` — generate a complete server blueprint
+- `/server-deploy` — create categories/channels/roles from a template without duplicating existing items
+- `/server-plan` — detailed planning
 - `/server-roles` — role hierarchy
 - `/server-channels` — channel structure
 - `/server-permissions` — permission checklist
-- `/server-rules` — server rules builder
+- `/server-rules` — rules builder
 - `/server-audit` — server audit
-- `/server-setup` — safe dry-run setup preview
+- `/server-setup` — dry-run setup preview
 
-### Developer utilities
+## Developer Toolkit
+
+- `/forge` — complete Forge dashboard
+- `/forge-status` — runtime summary
+- `/project` — project execution plan
+- `/code` — coding workflow
+- `/generate` — local starter generator
+- `/debug` — error diagnosis helper
+- `/explain` — explanation helper
+- `/improve` — refactoring checklist
+- `/review` — quality/security review
+- `/convert` — conversion workflow
+- `/docs` — documentation template
 - `/json` — validate/format JSON
 - `/regex` — validate regex
 - `/timestamp` — Discord timestamp formatter
@@ -70,39 +75,44 @@ API keys are never hardcoded in source code. Configure `OPENAI_API_KEY` through 
 - `/uuid` — UUID generator
 - `/hash` — SHA-256 hashing
 
-### Security & diagnostics
-- `/permissions` — inspect Forge permissions
-- `/security-audit` — lightweight security checklist
+## Security & Operations
+
+- `/permissions` — inspect Forge's current guild permissions
+- `/security-audit` — lightweight server security checklist
 - `/health` — runtime health
+- `/deploy-check` — production readiness check
+- `/invite` — generate a permission-scoped bot invite
 - `/logs` — owner diagnostics
+- `/backup-db` — owner-only SQLite SQL backup
+- `/shutdown` — owner-only safe shutdown
 - `/stats` — Forge statistics
 - `/ping` — latency check
 - `/about` — Forge information
 
-### Owner tools
-- `/owner` — owner access check
-- `/owner-status` — owner runtime status
-- `/owner-guilds` — connected guild list
-- `/owner-broadcast` — controlled owner broadcast
-- `/owner-maintenance` — maintenance information
-- `/owner-shutdown` — safe shutdown guidance
+## Configuration
+
+Guild administrators can configure supported server settings through the configuration commands. Owner-only operations use `OWNER_IDS`; server management operations use Discord permissions rather than relying only on command visibility.
 
 ## Setup
 
 1. Install Python 3.11+.
 2. Run `pip install -r requirements.txt`.
-3. Create a local `.env` file containing the runtime configuration required by `bot.py`.
-4. Set `DISCORD_TOKEN` to the bot token through your private host environment or local `.env`.
+3. Create a private `.env` file or configure equivalent host environment variables.
+4. Set `DISCORD_TOKEN`.
 5. Set `OWNER_IDS` to comma-separated Discord user IDs.
-6. Set `OPENAI_API_KEY` for AI features and optionally set `OPENAI_MODEL`.
-7. Enable the Discord intents required by the features you use.
+6. Set `OPENAI_API_KEY` for AI features and optionally `OPENAI_MODEL`.
+7. Enable Discord intents required by the features you use.
 8. Run `python bot.py`.
 
-The repository intentionally does not contain an `.env.example`. Never commit `.env` or expose credentials in GitHub, Discord, or chat.
+The repository intentionally does **not** contain `.env` or `.env.example`. Never commit credentials.
 
-## Security
+### Development
 
-Never post a Discord bot token, OpenAI API key, password, or other secret in chat, GitHub, or Discord. If a secret is exposed, rotate it immediately. Generated projects use environment variables rather than hardcoded credentials.
+Install `requirements-dev.txt` and run `pytest -q`. CI also runs compilation and the test suite automatically.
+
+### Docker
+
+Build with `docker build -t esn-forge .` and run with your private environment variables. The included `docker-compose.yml` persists the SQLite `data/` directory.
 
 ## Project layout
 
@@ -116,13 +126,19 @@ ESN-Forge/
 │   ├── botbuilder.py
 │   ├── embeds.py
 │   ├── server.py
+│   ├── ops.py
 │   ├── config.py
 │   ├── help.py
 │   └── tools.py
 ├── utils/
 │   └── database.py
+├── tests/
 ├── data/                 # runtime SQLite database; do not commit
 ├── requirements.txt
+├── requirements-dev.txt
+├── Dockerfile
+├── docker-compose.yml
+├── .github/workflows/ci.yml
 ├── .gitignore
 └── README.md
 ```
