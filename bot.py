@@ -7,7 +7,6 @@ from utils.database import Database
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
-
 TOKEN = os.getenv("DISCORD_TOKEN")
 if not TOKEN:
     raise RuntimeError("DISCORD_TOKEN is missing. Put it in .env when you are ready to run Forge.")
@@ -23,7 +22,8 @@ class ESNForge(commands.Bot):
         self.db = Database("data/forge.db")
 
     async def setup_hook(self):
-        for extension in ("cogs.forge", "cogs.code", "cogs.embeds", "cogs.server", "cogs.help"):
+        extensions = ("cogs.forge", "cogs.code", "cogs.embeds", "cogs.server", "cogs.botbuilder", "cogs.config", "cogs.help")
+        for extension in extensions:
             await self.load_extension(extension)
         synced = await self.tree.sync()
         logging.info("ESN Forge synced %s slash commands", len(synced))
