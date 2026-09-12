@@ -105,7 +105,7 @@ class BotBuilder(commands.Cog):
             app_commands.Choice(name="JavaScript (discord.js)", value="javascript"),
         ]
     )
-    async def generate_bot(
+    async def create(
         self,
         interaction: discord.Interaction,
         name: str,
