@@ -1,20 +1,24 @@
-import os
 import logging
+import os
+
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+
 from utils.database import Database
 
 load_dotenv()
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+log = logging.getLogger("esn-forge")
 TOKEN = os.getenv("DISCORD_TOKEN")
 if not TOKEN:
-    raise RuntimeError("DISCORD_TOKEN is missing. Put it in .env when you are ready to run Forge.")
+    raise RuntimeError("DISCORD_TOKEN is missing. Put it in the host environment before running Forge.")
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 intents.guilds = True
+
 
 class ESNForge(commands.Bot):
     def __init__(self):
@@ -27,13 +31,35 @@ class ESNForge(commands.Bot):
             "cogs.botbuilder", "cogs.config", "cogs.help", "cogs.tools", "cogs.ai"
         )
         for extension in extensions:
-            await self.load_extension(extension)
+            try:
+                await self.load_extension(extension)
+                log.info("Loaded %s", extension)
+            except Exception:
+                log.exception("Failed loading extension %s", extension)
+                raise
         synced = await self.tree.sync()
-        logging.info("ESN Forge synced %s slash commands", len(synced))
+        log.info("ESN Forge synced %s slash commands", len(synced))
 
     async def on_ready(self):
-        logging.info("ESN Forge online as %s (%s)", self.user, self.user.id)
+        log.info("ESN Forge online as %s (%s) in %s guilds", self.user, self.user.id, len(self.guilds))
         await self.change_presence(activity=discord.Game(name="/forge • Build. Create. Deploy."))
+
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandNotFound):
+            return
+        log.error("Prefix command error", exc_info=error)
+
+    async def on_app_command_error(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
+        log.error("Slash command error: %s", error, exc_info=error)
+        message = "❌ Something went wrong while running that command. The error has been logged for the Forge owner."
+        try:
+            if interaction.response.is_done():
+                await interaction.followup.send(message, ephemeral=True)
+            else:
+                await interaction.response.send_message(message, ephemeral=True)
+        except discord.HTTPException:
+            log.exception("Could not send slash-command error response")
+
 
 bot = ESNForge()
 bot.run(TOKEN)
