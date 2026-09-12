@@ -19,7 +19,8 @@ class Embeds(commands.Cog):
         except ValueError as exc:
             await interaction.response.send_message(f"❌ {exc}", ephemeral=True)
             return
-        embed = discord.Embed(title=title[:256], description=description[:4096], color=color_value, url=url.strip()[:2048] if url.strip() else discord.Embed.Empty)
+        embed = discord.Embed(title=title[:256], description=description[:4096], color=color_value)
+        if url.strip(): embed.url = url.strip()[:2048]
         if footer.strip(): embed.set_footer(text=footer[:2048])
         if thumbnail.strip(): embed.set_thumbnail(url=thumbnail.strip()[:2048])
         if image.strip(): embed.set_image(url=image.strip()[:2048])
