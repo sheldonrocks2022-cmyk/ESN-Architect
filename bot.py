@@ -3,38 +3,34 @@ import logging
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from utils.database import Database
 
 load_dotenv()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 
 TOKEN = os.getenv("DISCORD_TOKEN")
-PREFIX = os.getenv("PREFIX", "!")
-
 if not TOKEN:
-    raise RuntimeError("DISCORD_TOKEN is not configured. Add it to your environment.")
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+    raise RuntimeError("DISCORD_TOKEN is missing. Put it in .env when you are ready to run Forge.")
 
 intents = discord.Intents.default()
-intents.guilds = True
-intents.members = True
 intents.message_content = True
+intents.members = True
+intents.guilds = True
 
 class ESNForge(commands.Bot):
+    def __init__(self):
+        super().__init__(command_prefix="!", intents=intents, help_command=None)
+        self.db = Database("data/forge.db")
+
     async def setup_hook(self):
-        await self.load_extension("cogs.forge")
-        await self.load_extension("cogs.embeds")
-        await self.load_extension("cogs.server")
-        await self.load_extension("cogs.code")
-        await self.load_extension("cogs.help")
-        try:
-            synced = await self.tree.sync()
-            logging.info("Synced %s application commands", len(synced))
-        except Exception:
-            logging.exception("Failed to sync application commands")
+        for extension in ("cogs.forge", "cogs.code", "cogs.embeds", "cogs.server", "cogs.help"):
+            await self.load_extension(extension)
+        synced = await self.tree.sync()
+        logging.info("ESN Forge synced %s slash commands", len(synced))
 
     async def on_ready(self):
         logging.info("ESN Forge online as %s (%s)", self.user, self.user.id)
-        await self.change_presence(activity=discord.Game(name="Building with ESN Forge"))
+        await self.change_presence(activity=discord.Game(name="/forge • Build. Create. Deploy."))
 
-bot = ESNForge(command_prefix=PREFIX, intents=intents, help_command=None)
+bot = ESNForge()
 bot.run(TOKEN)
