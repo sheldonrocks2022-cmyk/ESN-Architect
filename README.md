@@ -2,37 +2,87 @@
 
 **Build. Create. Deploy.**
 
-ESN Forge is an ESN developer toolkit for Discord communities, creators, and developers. It provides practical generators, troubleshooting helpers, server architecture guidance, embed creation, and project planning from one bot.
+ESN Forge is an ESN developer toolkit for Discord communities, creators, and developers. It combines coding helpers, bot project generation, embed tools, server architecture, security checks, utilities, and owner diagnostics.
 
-## Features
+## Command toolkit
 
-- `/forge` — Forge dashboard and toolkit
-- `/code` — coding workflow and implementation guidance
-- `/debug` — error diagnosis and troubleshooting hints
-- `/bot` — Discord bot starter specification
-- `/embed` — instantly create a Discord embed
-- `/server` — generate a server architecture plan
-- `/project` — create a project blueprint
-- `/config` — configure guild settings
-- `/owner` — check configured owner access
-- `/help` — command reference
-- SQLite-backed guild configuration
-- Environment-based secrets; tokens are never stored in source code
-- Modular `cogs/` architecture for future expansion
+### Forge & coding
+- `/forge` — main Forge dashboard
+- `/project` — project blueprint
+- `/code` — coding workflow
+- `/generate` — starter implementation generator
+- `/debug` — error diagnosis
+- `/explain` — explain code/concepts
+- `/improve` — refactoring checklist
+- `/review` — quality/security review
+- `/convert` — conversion workflow
+- `/docs` — documentation template
+
+### Bot Forge
+- `/bot` — bot starter specification
+- `/bot-create` — downloadable starter bot ZIP
+- `/bot-command` — command template
+- `/bot-event` — event template
+- `/bot-feature` — feature implementation plan
+- `/bot-structure` — project structure
+- `/bot-config` — secure configuration guidance
+- `/bot-export` — starter project export
+
+### Embed Forge
+- `/embed` — create an embed
+- `/embed-json` — embed configuration JSON
+- `/embed-code` — Python embed code
+- `/embed-template` — reusable template
+
+### Server Forge
+- `/server` — server architecture plan
+- `/server-plan` — detailed plan
+- `/server-roles` — role hierarchy
+- `/server-channels` — channel structure
+- `/server-permissions` — permission checklist
+- `/server-rules` — rules template
+- `/server-audit` — server audit
+- `/server-setup` — safe dry-run setup preview
+
+### Developer utilities
+- `/json` — validate/format JSON
+- `/regex` — validate regex
+- `/timestamp` — Discord timestamp formatter
+- `/color` — hex/RGB converter
+- `/base64` — Base64 encoder/decoder
+- `/uuid` — UUID generator
+- `/hash` — SHA-256 hashing
+
+### Security & diagnostics
+- `/permissions` — inspect Forge permissions
+- `/security-audit` — lightweight security checklist
+- `/health` — runtime health
+- `/logs` — owner diagnostics
+- `/stats` — Forge statistics
+- `/ping` — latency check
+- `/about` — Forge information
+
+### Owner tools
+- `/owner` — owner access check
+- `/owner-status` — owner runtime status
+- `/owner-guilds` — connected guild list
+- `/owner-broadcast` — broadcast control placeholder
+- `/owner-maintenance` — maintenance information
+- `/owner-shutdown` — safe shutdown guidance
 
 ## Setup
 
 1. Install Python 3.11+.
 2. Run `pip install -r requirements.txt`.
 3. Copy `.env.example` to `.env`.
-4. Set `DISCORD_TOKEN` to the bot token locally. Never commit `.env`.
+4. Set `DISCORD_TOKEN` locally or in your host's secret manager. Never commit `.env`.
 5. Set `OWNER_IDS` to comma-separated Discord user IDs.
-6. Enable the Message Content and Server Members intents in the Discord Developer Portal if your deployment needs them.
+6. Enable the Discord intents required by the features you use.
 7. Run `python bot.py`.
 
 ## Security
 
-Never post a Discord bot token, API key, password, or other secret in chat, GitHub, or Discord. If a token is ever exposed, rotate it immediately in the Discord Developer Portal.
+Never post a Discord bot token, API key, password, or other secret in chat, GitHub, or Discord. If a token is exposed, rotate it immediately. Generated projects use environment variables rather than hardcoded credentials.
 
 ## Project layout
 
@@ -46,17 +96,16 @@ ESN-Forge/
 │   ├── embeds.py
 │   ├── server.py
 │   ├── config.py
-│   └── help.py
+│   ├── help.py
+│   └── tools.py
 ├── utils/
 │   └── database.py
-├── data/                 # runtime SQLite database
+├── data/                 # runtime SQLite database; do not commit
 ├── .env.example
 ├── requirements.txt
 └── README.md
 ```
 
-## Roadmap
-
-The architecture is ready for richer AI-assisted code generation, interactive builders, reusable templates, permission-aware server deployment, project exports, logging, and additional creator/developer tools without changing the core bot structure.
+ESN Forge is intentionally modular so richer AI generation, interactive builders, persistent templates, permission-aware deployment, and more export formats can be added without rebuilding the core.
 
 **ESN Forge — Powering creators. Elevating communities.**
