@@ -74,16 +74,17 @@ class ForgeAI(commands.Cog):
         self.cooldowns[user_id] = now
         return True, 0
 
-    async def ask_ai(self, prompt: str, interaction: discord.Interaction, max_tokens: int = 6000) -> str:
+    async def ask_ai(self, prompt: str, interaction: discord.Interaction, max_tokens: int = 6000, enforce_rate: bool = True) -> str:
         if not self.client:
             return "AI is not configured. Add `OPENAI_API_KEY` to your host environment and restart Forge."
         if interaction.guild_id:
             cfg = self.bot.db.get_config(interaction.guild_id)
             if not cfg.get("ai_enabled", True):
                 return "AI is disabled for this server. An administrator can enable it with the Forge configuration tools."
-        ok, wait = self.allowed(interaction)
-        if not ok:
-            return f"⏳ Slow down — try again in about {wait}s."
+        if enforce_rate:
+            ok, wait = self.allowed(interaction)
+            if not ok:
+                return f"⏳ Slow down — try again in about {wait}s."
         prompt = clean_secret(prompt)
         model = self.model_for(interaction.guild_id)
         response = await self.client.responses.create(
@@ -198,7 +199,7 @@ Include all essential source files, README, dependency/lock configuration when a
 Do not include real credentials. Do not use TODO placeholders for required functionality. Keep paths relative and safe.
 """
         try:
-            raw = await self.ask_ai(prompt, interaction, 14000)
+            raw = await self.ask_ai(prompt, interaction, 14000, enforce_rate=False)
             match = re.search(r"\{.*\}", raw, re.S)
             if not match:
                 raise ValueError("AI did not return valid project JSON")
