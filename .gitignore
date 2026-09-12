@@ -3,6 +3,11 @@
 !.env.example
 __pycache__/
 *.py[cod]
+*.sqlite
+*.db
 data/*.db
 .venv/
 venv/
+.pytest_cache/
+.coverage
+.DS_Store
