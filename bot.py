@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 
 import discord
 from discord.ext import commands
@@ -7,12 +8,40 @@ from dotenv import load_dotenv
 
 from utils.database import Database
 
-load_dotenv()
+ROOT = Path(__file__).resolve().parent
+ENV_FILE = ROOT / ".env"
+DATA_DIR = ROOT / "data"
+
+
+def ensure_local_environment() -> None:
+    """Create a safe local .env template when one does not exist.
+
+    The file contains no secrets and is intended to be filled in locally.
+    It is never committed by Forge itself.
+    """
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    if not ENV_FILE.exists():
+        ENV_FILE.write_text(
+            "# ESN Forge local configuration\n"
+            "# Add your real values here. DO NOT COMMIT THIS FILE.\n\n"
+            "DISCORD_TOKEN=\n"
+            "OWNER_IDS=\n"
+            "OPENAI_API_KEY=\n"
+            "OPENAI_MODEL=gpt-5.6-luna\n",
+            encoding="utf-8",
+        )
+        print(f"Created {ENV_FILE}. Add your credentials, then start Forge again.")
+
+
+ensure_local_environment()
+load_dotenv(ENV_FILE)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 log = logging.getLogger("esn-forge")
-TOKEN = os.getenv("DISCORD_TOKEN")
+TOKEN = os.getenv("DISCORD_TOKEN", "").strip()
 if not TOKEN:
-    raise RuntimeError("DISCORD_TOKEN is missing. Put it in the host environment before running Forge.")
+    raise RuntimeError(
+        "DISCORD_TOKEN is missing. Forge created .env for you; open it, add your token, and run the bot again."
+    )
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -23,7 +52,7 @@ intents.guilds = True
 class ESNForge(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=intents, help_command=None)
-        self.db = Database("data/forge.db")
+        self.db = Database(str(DATA_DIR / "forge.db"))
 
     async def setup_hook(self):
         extensions = (
