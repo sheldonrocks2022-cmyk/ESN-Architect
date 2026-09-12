@@ -2,7 +2,24 @@
 
 **Build. Create. Deploy.**
 
-ESN Forge is an ESN developer toolkit for Discord communities, creators, and developers. It combines coding helpers, bot project generation, embed tools, server architecture, security checks, utilities, and owner diagnostics.
+ESN Forge is an ESN developer toolkit for Discord communities, creators, and developers. It combines coding helpers, AI-assisted generation, bot project exports, embed tools, server architecture, security checks, utilities, and owner diagnostics.
+
+## AI Forge
+
+Forge can optionally use the OpenAI Responses API for real AI-assisted development. Current AI commands:
+
+- `/ask` — general developer/project assistant
+- `/ai-generate` — generate a real implementation
+- `/ai-debug` — diagnose an error and produce a fix
+- `/ai-explain` — explain code/concepts at a chosen level
+- `/ai-improve` — refactor code
+- `/ai-review` — security/quality/code review
+- `/ai-convert` — convert between languages/frameworks
+- `/ai-docs` — generate documentation
+- `/ai-project` — generate a multi-file project and download a ZIP
+- `/ai-status` — check AI configuration
+
+The AI layer never stores API keys in source code. Add `OPENAI_API_KEY` through your host's secret/environment settings. `OPENAI_MODEL` can select the model; the example defaults to `gpt-5.6-luna`.
 
 ## Command toolkit
 
@@ -10,11 +27,11 @@ ESN Forge is an ESN developer toolkit for Discord communities, creators, and dev
 - `/forge` — main Forge dashboard
 - `/project` — project blueprint
 - `/code` — coding workflow
-- `/generate` — starter implementation generator
-- `/debug` — error diagnosis
-- `/explain` — explain code/concepts
-- `/improve` — refactoring checklist
-- `/review` — quality/security review
+- `/generate` — local starter implementation generator
+- `/debug` — local error diagnosis
+- `/explain` — local explanation helper
+- `/improve` — local refactoring checklist
+- `/review` — local quality/security review
 - `/convert` — conversion workflow
 - `/docs` — documentation template
 
@@ -75,14 +92,15 @@ ESN Forge is an ESN developer toolkit for Discord communities, creators, and dev
 1. Install Python 3.11+.
 2. Run `pip install -r requirements.txt`.
 3. Copy `.env.example` to `.env`.
-4. Set `DISCORD_TOKEN` locally or in your host's secret manager. Never commit `.env`.
+4. Set `DISCORD_TOKEN` in your host's secret/environment settings. Never commit `.env`.
 5. Set `OWNER_IDS` to comma-separated Discord user IDs.
-6. Enable the Discord intents required by the features you use.
-7. Run `python bot.py`.
+6. For AI features, set `OPENAI_API_KEY` and optionally `OPENAI_MODEL`.
+7. Enable the Discord intents required by the features you use.
+8. Run `python bot.py`.
 
 ## Security
 
-Never post a Discord bot token, API key, password, or other secret in chat, GitHub, or Discord. If a token is exposed, rotate it immediately. Generated projects use environment variables rather than hardcoded credentials.
+Never post a Discord bot token, OpenAI API key, password, or other secret in chat, GitHub, or Discord. If a secret is exposed, rotate it immediately. Generated projects use environment variables rather than hardcoded credentials.
 
 ## Project layout
 
@@ -90,6 +108,7 @@ Never post a Discord bot token, API key, password, or other secret in chat, GitH
 ESN-Forge/
 ├── bot.py
 ├── cogs/
+│   ├── ai.py
 │   ├── forge.py
 │   ├── code.py
 │   ├── botbuilder.py
@@ -105,7 +124,5 @@ ESN-Forge/
 ├── requirements.txt
 └── README.md
 ```
-
-ESN Forge is intentionally modular so richer AI generation, interactive builders, persistent templates, permission-aware deployment, and more export formats can be added without rebuilding the core.
 
 **ESN Forge — Powering creators. Elevating communities.**
