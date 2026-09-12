@@ -3,6 +3,13 @@ import sqlite3
 from contextlib import contextmanager
 
 
+class UsageStats(dict):
+    """Mapping of command -> count that also preserves legacy row iteration."""
+
+    def __iter__(self):
+        return iter(self.items())
+
+
 class Database:
     """Small SQLite persistence layer for Forge configuration and saved data."""
 
@@ -65,7 +72,7 @@ class Database:
             )
 
     def get_usage(self, guild_id, user_id=None):
-        """Return command usage as a mapping for one user or rows for a whole guild."""
+        """Return command usage as rows for a guild or a mapping for one user."""
         with self._connect() as con:
             if user_id is None:
                 return con.execute(
@@ -76,7 +83,7 @@ class Database:
                 "SELECT command, uses FROM usage WHERE guild_id=? AND user_id=? ORDER BY uses DESC",
                 (int(guild_id or 0), int(user_id)),
             ).fetchall()
-        return {command: uses for command, uses in rows}
+        return UsageStats(rows)
 
     def save_session_message(self, guild_id, user_id, session, role, content):
         with self._connect() as con:
