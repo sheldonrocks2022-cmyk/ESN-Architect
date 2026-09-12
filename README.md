@@ -6,7 +6,7 @@ ESN Forge is an ESN developer toolkit for Discord communities, creators, and dev
 
 ## AI Forge
 
-Forge can optionally use the OpenAI Responses API for real AI-assisted development. Current AI commands:
+Forge can use the OpenAI Responses API for real AI-assisted development when `OPENAI_API_KEY` is configured. Current AI commands:
 
 - `/ask` — general developer/project assistant
 - `/ai-generate` — generate a real implementation
@@ -19,7 +19,7 @@ Forge can optionally use the OpenAI Responses API for real AI-assisted developme
 - `/ai-project` — generate a multi-file project and download a ZIP
 - `/ai-status` — check AI configuration
 
-The AI layer never stores API keys in source code. Add `OPENAI_API_KEY` through your host's secret/environment settings. `OPENAI_MODEL` can select the model; the example defaults to `gpt-5.6-luna`.
+API keys are never hardcoded in source code. Configure `OPENAI_API_KEY` through the runtime environment. `OPENAI_MODEL` selects the configured model.
 
 ## Command toolkit
 
@@ -57,7 +57,7 @@ The AI layer never stores API keys in source code. Add `OPENAI_API_KEY` through 
 - `/server-roles` — role hierarchy
 - `/server-channels` — channel structure
 - `/server-permissions` — permission checklist
-- `/server-rules` — rules template
+- `/server-rules` — server rules builder
 - `/server-audit` — server audit
 - `/server-setup` — safe dry-run setup preview
 
@@ -83,7 +83,7 @@ The AI layer never stores API keys in source code. Add `OPENAI_API_KEY` through 
 - `/owner` — owner access check
 - `/owner-status` — owner runtime status
 - `/owner-guilds` — connected guild list
-- `/owner-broadcast` — broadcast control placeholder
+- `/owner-broadcast` — controlled owner broadcast
 - `/owner-maintenance` — maintenance information
 - `/owner-shutdown` — safe shutdown guidance
 
@@ -91,12 +91,14 @@ The AI layer never stores API keys in source code. Add `OPENAI_API_KEY` through 
 
 1. Install Python 3.11+.
 2. Run `pip install -r requirements.txt`.
-3. Copy `.env.example` to `.env`.
-4. Set `DISCORD_TOKEN` in your host's secret/environment settings. Never commit `.env`.
+3. Create a local `.env` file containing the runtime configuration required by `bot.py`.
+4. Set `DISCORD_TOKEN` to the bot token through your private host environment or local `.env`.
 5. Set `OWNER_IDS` to comma-separated Discord user IDs.
-6. For AI features, set `OPENAI_API_KEY` and optionally `OPENAI_MODEL`.
+6. Set `OPENAI_API_KEY` for AI features and optionally set `OPENAI_MODEL`.
 7. Enable the Discord intents required by the features you use.
 8. Run `python bot.py`.
+
+The repository intentionally does not contain an `.env.example`. Never commit `.env` or expose credentials in GitHub, Discord, or chat.
 
 ## Security
 
@@ -120,8 +122,8 @@ ESN-Forge/
 ├── utils/
 │   └── database.py
 ├── data/                 # runtime SQLite database; do not commit
-├── .env.example
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
