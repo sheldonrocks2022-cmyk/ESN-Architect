@@ -12,19 +12,25 @@ class Embeds(commands.Cog):
     @app_commands.describe(title="Embed title", description="Embed body", footer="Optional footer", color="Hex color such as #42E8F4", url="Optional URL")
     async def embed(self, interaction: discord.Interaction, title: str, description: str, footer: str = "", color: str = "#42E8F4", url: str = ""):
         raw = color.strip().lstrip("#")
+        if len(raw) != 6:
+            await interaction.response.send_message("❌ Invalid color. Use a 6-digit hex value such as `#42E8F4`.", ephemeral=True)
+            return
         try:
             value = int(raw, 16)
-            if not 0 <= value <= 0xFFFFFF:
-                raise ValueError
         except ValueError:
             await interaction.response.send_message("❌ Invalid color. Use a 6-digit hex value such as `#42E8F4`.", ephemeral=True)
             return
-        embed = discord.Embed(title=title[:256], description=description[:4096], color=value, url=url[:2048] or discord.Embed.Empty)
+        kwargs = {"title": title[:256], "description": description[:4096], "color": value}
+        if url.strip():
+            kwargs["url"] = url.strip()[:2048]
+        embed = discord.Embed(**kwargs)
         if footer:
             embed.set_footer(text=footer[:2048])
-        payload = {
-            "embeds": [{"title": title[:256], "description": description[:4096], "color": value, **({"url": url[:2048]} if url else {}), **({"footer": {"text": footer[:2048]}} if footer else {})}]
-        }
+        payload = {"embeds": [{"title": title[:256], "description": description[:4096], "color": value}]}
+        if url.strip():
+            payload["embeds"][0]["url"] = url.strip()[:2048]
+        if footer:
+            payload["embeds"][0]["footer"] = {"text": footer[:2048]}
         export = "```json\n" + json.dumps(payload, indent=2)[:3600] + "\n```"
         embed.add_field(name="📦 Export JSON", value=export, inline=False)
         await interaction.response.send_message(embed=embed)
@@ -40,7 +46,11 @@ class Embeds(commands.Cog):
         except (json.JSONDecodeError, ValueError, AttributeError, TypeError, IndexError):
             await interaction.response.send_message("❌ Invalid JSON. Provide an object or an object containing an `embeds` array.", ephemeral=True)
             return
-        embed = discord.Embed.from_dict(item)
+        try:
+            embed = discord.Embed.from_dict(item)
+        except (ValueError, TypeError):
+            await interaction.response.send_message("❌ The embed payload contains invalid Discord embed fields.", ephemeral=True)
+            return
         await interaction.response.send_message(content="**Embed preview**", embed=embed)
 
 
