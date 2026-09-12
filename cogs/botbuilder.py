@@ -38,18 +38,20 @@ def make_project(name: str, language: str, features: list[str]) -> bytes:
     files = py_project(name, features) if language == "python" else js_project(name, features)
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
-        for path, content in files.items(): archive.writestr(f"{slug}/{path}", content)
+        for path, content in files.items():
+            archive.writestr(f"{slug}/{path}", content)
         archive.writestr(f"{slug}/FORGE-MANIFEST.json", json.dumps({"generator": "ESN Forge", "name": name, "language": language, "features": features}, indent=2))
     return buffer.getvalue()
 
 
 class BotBuilder(commands.Cog):
-    def __init__(self, bot): self.bot = bot
+    def __init__(self, bot):
+        self.bot = bot
 
     @app_commands.command(name="bot", description="Generate a downloadable Discord bot project.")
     @app_commands.describe(name="Project name", language="Python or JavaScript", features="Comma-separated feature/command names")
     @app_commands.choices(language=[app_commands.Choice(name="Python (discord.py)", value="python"), app_commands.Choice(name="JavaScript (discord.js)", value="javascript")])
-    async def bot_builder(self, interaction, name: str, language: app_commands.Choice[str], features: str = "ping, help, moderation"):
+    async def bot_generate(self, interaction, name: str, language: app_commands.Choice[str], features: str = "ping, help, moderation"):
         feature_list = clean_csv(features, 15)
         data = make_project(name[:80], language.value, feature_list)
         file = discord.File(io.BytesIO(data), filename=f"{safe_slug(name)}-esn-forge.zip")
@@ -59,4 +61,5 @@ class BotBuilder(commands.Cog):
         await interaction.response.send_message(embed=embed, file=file)
 
 
-async def setup(bot): await bot.add_cog(BotBuilder(bot))
+async def setup(bot):
+    await bot.add_cog(BotBuilder(bot))
