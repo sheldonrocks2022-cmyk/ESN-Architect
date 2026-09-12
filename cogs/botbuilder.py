@@ -51,7 +51,7 @@ class BotBuilder(commands.Cog):
     @app_commands.command(name="bot", description="Generate a downloadable Discord bot project.")
     @app_commands.describe(name="Project name", language="Python or JavaScript", features="Comma-separated feature/command names")
     @app_commands.choices(language=[app_commands.Choice(name="Python (discord.py)", value="python"), app_commands.Choice(name="JavaScript (discord.js)", value="javascript")])
-    async def bot_generate(self, interaction, name: str, language: app_commands.Choice[str], features: str = "ping, help, moderation"):
+    async def generate_bot(self, interaction, name: str, language: app_commands.Choice[str], features: str = "ping, help, moderation"):
         feature_list = clean_csv(features, 15)
         data = make_project(name[:80], language.value, feature_list)
         file = discord.File(io.BytesIO(data), filename=f"{safe_slug(name)}-esn-forge.zip")
