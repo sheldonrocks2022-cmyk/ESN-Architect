@@ -24,7 +24,7 @@ class ESNForge(commands.Bot):
     async def setup_hook(self):
         extensions = (
             "cogs.forge", "cogs.code", "cogs.embeds", "cogs.server",
-            "cogs.botbuilder", "cogs.config", "cogs.help", "cogs.tools"
+            "cogs.botbuilder", "cogs.config", "cogs.help", "cogs.tools", "cogs.ai"
         )
         for extension in extensions:
             await self.load_extension(extension)
